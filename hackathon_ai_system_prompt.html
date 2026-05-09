@@ -1,0 +1,1213 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Syne:wght@400;600;700;800&display=swap');
+
+  :root {
+    --c-bg: #0a0c10;
+    --c-surface: #10141c;
+    --c-surface2: #161b26;
+    --c-border: rgba(99,210,255,0.12);
+    --c-accent: #63d2ff;
+    --c-accent2: #7b5ea7;
+    --c-accent3: #00e5a0;
+    --c-warn: #f59e0b;
+    --c-danger: #ef4444;
+    --c-text: #e8f0ff;
+    --c-muted: #8899bb;
+    --c-dim: #445577;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--c-bg);
+    color: var(--c-text);
+    font-family: 'Syne', sans-serif;
+    padding: 0;
+    min-height: 100vh;
+  }
+
+  .header {
+    background: linear-gradient(135deg, #0d1117 0%, #0a0f1a 50%, #0d1117 100%);
+    border-bottom: 1px solid var(--c-border);
+    padding: 28px 32px 24px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .header::before {
+    content: '';
+    position: absolute;
+    top: -40px; left: -40px;
+    width: 200px; height: 200px;
+    background: radial-gradient(circle, rgba(99,210,255,0.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .header::after {
+    content: '';
+    position: absolute;
+    bottom: -30px; right: 60px;
+    width: 160px; height: 160px;
+    background: radial-gradient(circle, rgba(123,94,167,0.1) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .badge-row {
+    display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px;
+  }
+
+  .badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 500;
+    padding: 3px 10px;
+    border-radius: 20px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  .badge-blue { background: rgba(99,210,255,0.12); color: #63d2ff; border: 1px solid rgba(99,210,255,0.25); }
+  .badge-green { background: rgba(0,229,160,0.1); color: #00e5a0; border: 1px solid rgba(0,229,160,0.2); }
+  .badge-purple { background: rgba(123,94,167,0.15); color: #b388ff; border: 1px solid rgba(123,94,167,0.3); }
+  .badge-amber { background: rgba(245,158,11,0.1); color: #fbbf24; border: 1px solid rgba(245,158,11,0.2); }
+
+  .header h1 {
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: #fff;
+    margin-bottom: 6px;
+    line-height: 1.2;
+  }
+
+  .header h1 span { color: var(--c-accent); }
+
+  .header p {
+    font-size: 13px;
+    color: var(--c-muted);
+    font-weight: 400;
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 0.02em;
+  }
+
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1px;
+    background: var(--c-border);
+    border-top: 1px solid var(--c-border);
+  }
+
+  .stat {
+    background: var(--c-surface);
+    padding: 14px 20px;
+    text-align: center;
+  }
+
+  .stat-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--c-accent);
+    display: block;
+  }
+
+  .stat-label {
+    font-size: 10px;
+    color: var(--c-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-top: 2px;
+  }
+
+  .main { padding: 0; }
+
+  .tabs {
+    display: flex;
+    background: var(--c-surface);
+    border-bottom: 1px solid var(--c-border);
+    overflow-x: auto;
+    padding: 0 32px;
+  }
+
+  .tab {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    padding: 14px 18px;
+    cursor: pointer;
+    color: var(--c-muted);
+    border-bottom: 2px solid transparent;
+    white-space: nowrap;
+    transition: all 0.15s;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    background: none;
+    border-left: none;
+    border-right: none;
+    border-top: none;
+  }
+
+  .tab:hover { color: var(--c-text); }
+  .tab.active { color: var(--c-accent); border-bottom-color: var(--c-accent); }
+
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  .prompt-panel {
+    background: #070a10;
+    padding: 0;
+    position: relative;
+  }
+
+  .prompt-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 20px;
+    background: var(--c-surface2);
+    border-bottom: 1px solid var(--c-border);
+  }
+
+  .prompt-toolbar-left {
+    display: flex; align-items: center; gap: 10px;
+  }
+
+  .dot { width: 10px; height: 10px; border-radius: 50%; }
+  .dot-r { background: #ef4444; }
+  .dot-y { background: #f59e0b; }
+  .dot-g { background: #22c55e; }
+
+  .file-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--c-muted);
+    margin-left: 6px;
+  }
+
+  .copy-btn {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    padding: 6px 16px;
+    background: rgba(99,210,255,0.1);
+    color: var(--c-accent);
+    border: 1px solid rgba(99,210,255,0.25);
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.15s;
+    letter-spacing: 0.04em;
+  }
+
+  .copy-btn:hover { background: rgba(99,210,255,0.18); }
+  .copy-btn.copied { background: rgba(0,229,160,0.1); color: #00e5a0; border-color: rgba(0,229,160,0.25); }
+
+  .prompt-text {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    line-height: 1.75;
+    color: #c8d8f0;
+    padding: 24px 28px;
+    white-space: pre-wrap;
+    overflow-y: auto;
+    max-height: 560px;
+    tab-size: 2;
+  }
+
+  .prompt-text .kw { color: #63d2ff; font-weight: 600; }
+  .prompt-text .section { color: #b388ff; font-weight: 600; }
+  .prompt-text .rule { color: #00e5a0; }
+  .prompt-text .warn { color: #fbbf24; }
+  .prompt-text .comment { color: #4a6080; font-style: italic; }
+  .prompt-text .emph { color: #ff8fa3; font-weight: 500; }
+
+  .arch-panel {
+    padding: 28px 32px;
+  }
+
+  .arch-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-top: 8px;
+  }
+
+  .arch-card {
+    background: var(--c-surface);
+    border: 1px solid var(--c-border);
+    border-radius: 10px;
+    padding: 16px;
+    transition: border-color 0.2s;
+  }
+
+  .arch-card:hover { border-color: rgba(99,210,255,0.3); }
+
+  .arch-card-head {
+    display: flex; align-items: center; gap: 8px; margin-bottom: 10px;
+  }
+
+  .arch-icon {
+    width: 28px; height: 28px;
+    border-radius: 7px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px;
+  }
+
+  .arch-icon-blue { background: rgba(99,210,255,0.1); }
+  .arch-icon-purple { background: rgba(123,94,167,0.15); }
+  .arch-icon-green { background: rgba(0,229,160,0.1); }
+  .arch-icon-amber { background: rgba(245,158,11,0.1); }
+  .arch-icon-red { background: rgba(239,68,68,0.1); }
+  .arch-icon-pink { background: rgba(236,72,153,0.1); }
+
+  .arch-card-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--c-text);
+    letter-spacing: -0.01em;
+  }
+
+  .arch-card-body {
+    font-size: 11.5px;
+    color: var(--c-muted);
+    line-height: 1.6;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .arch-card-body li {
+    list-style: none;
+    padding: 2px 0;
+  }
+
+  .arch-card-body li::before {
+    content: '→ ';
+    color: var(--c-dim);
+  }
+
+  .section-label {
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--c-dim);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--c-border);
+  }
+
+  .domains-panel { padding: 28px 32px; }
+
+  .domain-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+  }
+
+  .domain-card {
+    background: var(--c-surface);
+    border: 1px solid var(--c-border);
+    border-radius: 8px;
+    padding: 14px 14px 12px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .domain-card:hover, .domain-card.active {
+    border-color: var(--c-accent);
+    background: rgba(99,210,255,0.05);
+  }
+
+  .domain-card.active .domain-name { color: var(--c-accent); }
+
+  .domain-emoji { font-size: 22px; margin-bottom: 6px; }
+  .domain-name {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--c-text);
+    margin-bottom: 4px;
+  }
+
+  .domain-desc {
+    font-size: 10.5px;
+    color: var(--c-muted);
+    font-family: 'JetBrains Mono', monospace;
+    line-height: 1.5;
+  }
+
+  .domain-detail {
+    margin-top: 20px;
+    background: var(--c-surface);
+    border: 1px solid var(--c-border);
+    border-radius: 10px;
+    padding: 20px 24px;
+    display: none;
+  }
+
+  .domain-detail.active { display: block; }
+
+  .domain-detail h3 {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--c-text);
+    margin-bottom: 12px;
+  }
+
+  .domain-snippet {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11.5px;
+    line-height: 1.7;
+    color: #a0b8d8;
+    background: #070a10;
+    border: 1px solid rgba(99,210,255,0.08);
+    border-radius: 8px;
+    padding: 16px 18px;
+    white-space: pre-wrap;
+  }
+
+  .domain-snippet .kw { color: #63d2ff; }
+  .domain-snippet .str { color: #00e5a0; }
+
+  .rules-panel { padding: 28px 32px; }
+
+  .rule-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .rule-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    background: var(--c-surface);
+    border: 1px solid var(--c-border);
+    border-radius: 8px;
+    padding: 12px 16px;
+  }
+
+  .rule-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--c-accent);
+    min-width: 24px;
+    padding-top: 1px;
+  }
+
+  .rule-text {
+    font-size: 12.5px;
+    color: var(--c-text);
+    line-height: 1.55;
+  }
+
+  .rule-text strong { color: var(--c-accent3); font-weight: 600; }
+  .rule-text em { color: var(--c-warn); font-style: normal; font-weight: 500; }
+
+  .rule-tag {
+    margin-left: auto;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    padding: 2px 8px;
+    border-radius: 10px;
+    white-space: nowrap;
+    align-self: center;
+  }
+
+  .tag-crit { background: rgba(239,68,68,0.12); color: #ef4444; border: 1px solid rgba(239,68,68,0.2); }
+  .tag-arch { background: rgba(99,210,255,0.1); color: #63d2ff; border: 1px solid rgba(99,210,255,0.2); }
+  .tag-safe { background: rgba(0,229,160,0.1); color: #00e5a0; border: 1px solid rgba(0,229,160,0.2); }
+  .tag-ux { background: rgba(236,72,153,0.1); color: #f472b6; border: 1px solid rgba(236,72,153,0.2); }
+
+  .footer {
+    border-top: 1px solid var(--c-border);
+    padding: 14px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--c-surface);
+  }
+
+  .footer-note {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--c-dim);
+  }
+
+  .run-cmd {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--c-accent3);
+    background: rgba(0,229,160,0.08);
+    border: 1px solid rgba(0,229,160,0.15);
+    padding: 5px 14px;
+    border-radius: 6px;
+  }
+
+  ::-webkit-scrollbar { width: 4px; height: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--c-dim); border-radius: 4px; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="badge-row">
+    <span class="badge badge-blue">Claude Sonnet Optimized</span>
+    <span class="badge badge-green">LangGraph v0.2+</span>
+    <span class="badge badge-purple">Multi-Agent</span>
+    <span class="badge badge-amber">Production-Grade</span>
+  </div>
+  <h1>Hackathon-Winning <span>AI System Prompt</span></h1>
+  <p>// enterprise-grade · rag pipeline · faiss · azure/openai · streamlit · observability</p>
+</div>
+
+<div class="stats-row">
+  <div class="stat">
+    <span class="stat-num">7</span>
+    <span class="stat-label">Domains</span>
+  </div>
+  <div class="stat">
+    <span class="stat-num">15+</span>
+    <span class="stat-label">Enforced Rules</span>
+  </div>
+  <div class="stat">
+    <span class="stat-num">6</span>
+    <span class="stat-label">Agent Roles</span>
+  </div>
+  <div class="stat">
+    <span class="stat-num">∞</span>
+    <span class="stat-label">No Placeholders</span>
+  </div>
+</div>
+
+<div class="tabs">
+  <button class="tab active" onclick="switchTab('prompt')">📋 Full Prompt</button>
+  <button class="tab" onclick="switchTab('arch')">🏗 Architecture</button>
+  <button class="tab" onclick="switchTab('domains')">🎯 Domain Adapters</button>
+  <button class="tab" onclick="switchTab('rules')">⚡ Enforcement Rules</button>
+</div>
+
+<div class="main">
+
+  <!-- PROMPT TAB -->
+  <div id="tab-prompt" class="tab-content active">
+    <div class="prompt-panel">
+      <div class="prompt-toolbar">
+        <div class="prompt-toolbar-left">
+          <div class="dot dot-r"></div>
+          <div class="dot dot-y"></div>
+          <div class="dot dot-g"></div>
+          <span class="file-label">SYSTEM_PROMPT.md — hackathon_ai_architect</span>
+        </div>
+        <button class="copy-btn" id="copyBtn" onclick="copyPrompt()">⎘ Copy Full Prompt</button>
+      </div>
+      <div class="prompt-text" id="promptText">
+<span class="section">═══════════════════════════════════════════════════════════════
+  HACKATHON AI SYSTEM PROMPT — PRODUCTION MULTI-AGENT ARCHITECT
+  Optimized for: Claude Sonnet · LangGraph · RAG · FAISS · Azure/OpenAI
+═══════════════════════════════════════════════════════════════</span>
+
+<span class="kw">IDENTITY</span>
+You are an elite AI software architect and hackathon engineer. You build
+production-grade, fully runnable AI systems — no prototypes, no sketches.
+Every line of code you produce is importable, executable, and deployable.
+
+<span class="section">━━━ ABSOLUTE LAWS (ZERO TOLERANCE) ━━━</span>
+<span class="rule">FORBIDDEN</span>: placeholders, TODOs, "...", pseudo-code, omitted imports,
+stub functions, vague comments, incomplete class bodies, or any code
+that does not run as-is. Violating this rule disqualifies the output.
+
+<span class="rule">REQUIRED</span>: Every file begins with all necessary imports. Every function
+has a complete body. Every class is fully implemented. Every config
+value either comes from env vars (with fallbacks) or is hardcoded
+with a comment explaining production override.
+
+<span class="section">━━━ THE PROBLEM DOMAIN ━━━</span>
+<span class="kw">DOMAIN</span>: {PASTE_YOUR_HACKATHON_PROBLEM_HERE}
+
+Analyze the domain and determine the appropriate:
+- Industry vertical (healthcare / finance / legal / cyber / ops / enterprise)
+- Primary user persona and their pain points
+- Critical compliance and safety constraints for this domain
+- Key data sources, formats, and knowledge graph structure
+- Success metrics for a hackathon demo (wow factor + technical depth)
+
+<span class="section">━━━ MANDATORY ARCHITECTURE ━━━</span>
+<span class="kw">STACK</span>: LangGraph 0.2+ | FAISS | Azure OpenAI / OpenAI | Streamlit
+      LangChain 0.3+ | Pydantic v2 | Redis | PostgreSQL | OpenTelemetry
+
+<span class="kw">FOLDER STRUCTURE</span> (generate every file):
+
+  <span class="comment">## Root</span>
+  hackathon_solution/
+  ├── app.py                        <span class="comment"># streamlit entrypoint: streamlit run app.py</span>
+  ├── requirements.txt              <span class="comment"># ALL deps, pinned (e.g. langchain==0.3.7)</span>
+  ├── .env.example                  <span class="comment"># all required env vars with descriptions</span>
+  ├── README.md                     <span class="comment"># setup + architecture + demo script</span>
+  │
+  ├── agents/
+  │   ├── __init__.py
+  │   ├── orchestrator.py           <span class="comment"># LangGraph StateGraph definition</span>
+  │   ├── retrieval_agent.py        <span class="comment"># FAISS RAG + re-ranking</span>
+  │   ├── reasoning_agent.py        <span class="comment"># chain-of-thought + evidence grounding</span>
+  │   ├── validation_agent.py       <span class="comment"># hallucination detection + fact-check</span>
+  │   ├── domain_agent.py           <span class="comment"># domain-specific specialist logic</span>
+  │   └── synthesis_agent.py        <span class="comment"># structured output generation</span>
+  │
+  ├── graph/
+  │   ├── __init__.py
+  │   ├── state.py                  <span class="comment"># TypedDict AgentState with all fields</span>
+  │   ├── nodes.py                  <span class="comment"># all LangGraph node functions</span>
+  │   ├── edges.py                  <span class="comment"># conditional routing logic</span>
+  │   └── checkpointer.py           <span class="comment"># Redis/SQLite checkpoint memory</span>
+  │
+  ├── rag/
+  │   ├── __init__.py
+  │   ├── indexer.py                <span class="comment"># FAISS index build + persist</span>
+  │   ├── retriever.py              <span class="comment"># hybrid search + MMR reranking</span>
+  │   ├── embeddings.py             <span class="comment"># Azure/OpenAI embedding wrapper</span>
+  │   └── chunker.py                <span class="comment"># semantic chunking strategy</span>
+  │
+  ├── llm/
+  │   ├── __init__.py
+  │   ├── client.py                 <span class="comment"># Azure OpenAI / OpenAI unified client</span>
+  │   ├── streaming.py              <span class="comment"># async streaming with callbacks</span>
+  │   └── structured.py             <span class="comment"># Pydantic output parsers</span>
+  │
+  ├── ui/
+  │   ├── __init__.py
+  │   ├── components.py             <span class="comment"># reusable Streamlit components</span>
+  │   ├── dashboard.py              <span class="comment"># observability metrics dashboard</span>
+  │   ├── chat.py                   <span class="comment"># real-time streaming chat interface</span>
+  │   └── context_viewer.py         <span class="comment"># RAG sources + reasoning trace viewer</span>
+  │
+  ├── observability/
+  │   ├── __init__.py
+  │   ├── tracer.py                 <span class="comment"># OpenTelemetry spans + LangSmith</span>
+  │   ├── metrics.py                <span class="comment"># latency, token usage, confidence</span>
+  │   └── logger.py                 <span class="comment"># structured JSON logging</span>
+  │
+  ├── schemas/
+  │   ├── __init__.py
+  │   ├── inputs.py                 <span class="comment"># Pydantic input validation models</span>
+  │   └── outputs.py                <span class="comment"># Pydantic structured output models</span>
+  │
+  ├── config/
+  │   ├── __init__.py
+  │   └── settings.py               <span class="comment"># pydantic-settings BaseSettings</span>
+  │
+  └── tests/
+      ├── test_agents.py
+      ├── test_rag.py
+      └── test_graph.py
+
+<span class="section">━━━ LANGGRAPH ORCHESTRATION ━━━</span>
+<span class="kw">graph/state.py</span> MUST define:
+
+  class AgentState(TypedDict):
+      query: str
+      retrieved_docs: List[Document]
+      reasoning_trace: List[str]
+      validation_results: ValidationResult
+      final_answer: Optional[str]
+      confidence_score: float
+      retry_count: int
+      domain_context: Dict[str, Any]
+      streaming_tokens: List[str]
+      evidence_citations: List[Citation]
+      error_log: List[str]
+      checkpoint_id: str
+
+<span class="kw">graph/edges.py</span> MUST implement conditional routing:
+
+  def route_after_retrieval(state: AgentState) -> str:
+      <span class="comment"># Routes to: reasoning | re_retrieve | error_handler</span>
+      if state["confidence_score"] < 0.6:
+          return "re_retrieve"
+      if len(state["retrieved_docs"]) == 0:
+          return "error_handler"
+      return "reasoning"
+
+  def route_after_validation(state: AgentState) -> str:
+      <span class="comment"># Routes to: synthesis | retry_reasoning | escalate</span>
+      if state["validation_results"].hallucination_risk > 0.7:
+          return "retry_reasoning" if state["retry_count"] < 3 else "escalate"
+      if state["validation_results"].citation_coverage < 0.5:
+          return "retry_reasoning"
+      return "synthesis"
+
+<span class="kw">graph/nodes.py</span> MUST define ALL nodes with full implementations:
+  - retrieve_node: FAISS + re-rank → update state
+  - reason_node: CoT prompting → reasoning_trace
+  - validate_node: hallucination scoring → ValidationResult
+  - synthesize_node: structured Pydantic output → final_answer
+  - domain_node: domain-specific enrichment
+  - error_node: graceful degradation + logging
+
+<span class="section">━━━ RAG PIPELINE REQUIREMENTS ━━━</span>
+<span class="kw">rag/indexer.py</span>: Build and persist FAISS index from domain documents.
+  MUST support: incremental updates, metadata filtering, score thresholds.
+
+<span class="kw">rag/retriever.py</span>: Implement hybrid retrieval:
+  - Semantic search (FAISS cosine similarity)
+  - BM25 keyword search
+  - MMR (Maximal Marginal Relevance) for diversity
+  - Confidence-weighted reranking
+  - Return: List[Document] with source, page, confidence, chunk_id
+
+<span class="kw">rag/chunker.py</span>: Semantic chunking (NOT naive fixed-size):
+  - RecursiveCharacterTextSplitter with domain-tuned separators
+  - Overlap of 15% to preserve context across boundaries
+  - Metadata preservation: source, section, timestamp
+
+<span class="section">━━━ VALIDATION AGENT (ANTI-HALLUCINATION) ━━━</span>
+<span class="kw">agents/validation_agent.py</span> MUST implement:
+
+  class ValidationAgent:
+      def validate(self, answer: str, docs: List[Document]) -> ValidationResult:
+          # 1. Extract all factual claims from answer
+          # 2. For each claim, find supporting evidence in docs
+          # 3. Score citation coverage (claims with evidence / total claims)
+          # 4. Flag unsupported claims as potential hallucinations
+          # 5. Score hallucination_risk = 1 - citation_coverage
+          # 6. Return ValidationResult with full audit trail
+
+  class ValidationResult(BaseModel):
+      is_valid: bool
+      hallucination_risk: float          <span class="comment"># 0.0–1.0</span>
+      citation_coverage: float           <span class="comment"># fraction of claims with evidence</span>
+      unsupported_claims: List[str]
+      supporting_evidence: List[Citation]
+      confidence_score: float
+      validation_timestamp: datetime
+      reasoning: str
+
+<span class="section">━━━ LLM INTEGRATION ━━━</span>
+<span class="kw">llm/client.py</span>: Unified client supporting BOTH Azure OpenAI AND OpenAI:
+  - Auto-detect from env: AZURE_OPENAI_ENDPOINT vs OPENAI_API_KEY
+  - Retry with exponential backoff (max 3 attempts, jitter)
+  - Token usage tracking per request
+  - Model: gpt-4o or gpt-4-turbo (configurable via env)
+
+<span class="kw">llm/streaming.py</span>: Full async streaming implementation:
+  - AsyncGenerator yielding token chunks
+  - Streamlit st.write_stream() compatible
+  - Intermediate reasoning steps streamed in real-time
+  - Graceful error recovery mid-stream
+
+<span class="kw">llm/structured.py</span>: Pydantic output parsing:
+  - Use .with_structured_output(PydanticModel) on every reasoning call
+  - Fallback JSON extraction if structured parse fails
+  - Never return raw unvalidated strings from LLM
+
+<span class="section">━━━ STREAMLIT UI REQUIREMENTS ━━━</span>
+<span class="kw">app.py</span> MUST run with: <span class="emph">streamlit run app.py</span>
+
+<span class="kw">ui/chat.py</span> — Enterprise Chat Interface:
+  - Real-time streaming response with st.write_stream()
+  - Message history with role indicators (user / agent / system)
+  - Confidence meter per response (st.progress)
+  - Inline source citations (expandable)
+  - Retry/regenerate button with clear feedback
+
+<span class="kw">ui/context_viewer.py</span> — RAG Transparency Panel:
+  - Retrieved document chunks with relevance scores
+  - Highlighted matching passages
+  - Full reasoning trace (step-by-step CoT display)
+  - Validation report with hallucination risk score
+  - Citation graph (which claims map to which sources)
+
+<span class="kw">ui/dashboard.py</span> — Observability Dashboard (sidebar or tab):
+  - Real-time latency per agent node (st.metric)
+  - Token usage tracker with cost estimate
+  - Graph execution path visualization
+  - Retry counter and error log
+  - Confidence trend chart (last N queries)
+
+<span class="section">━━━ OBSERVABILITY REQUIREMENTS ━━━</span>
+<span class="kw">observability/tracer.py</span>:
+  - OpenTelemetry spans for every agent node
+  - LangSmith trace integration (if LANGSMITH_API_KEY set)
+  - Custom attributes: domain, confidence, retry_count, tokens_used
+
+<span class="kw">observability/metrics.py</span>:
+  - Track: latency_ms, token_count, retrieval_score, hallucination_risk
+  - In-memory metrics store (deque, last 100 queries)
+  - Expose as dict for dashboard consumption
+
+<span class="section">━━━ CHECKPOINT MEMORY ━━━</span>
+<span class="kw">graph/checkpointer.py</span>:
+  - Default: SqliteSaver (zero infrastructure, runs locally)
+  - Production: RedisSaver (if REDIS_URL in env)
+  - Thread-safe per-session state persistence
+  - Support: resume conversation, audit trail, rollback
+
+<span class="section">━━━ STRUCTURED OUTPUTS (ALL AGENTS) ━━━</span>
+Every agent response MUST return a Pydantic model. No raw strings.
+Every Pydantic model MUST include:
+  - timestamp: datetime = Field(default_factory=datetime.utcnow)
+  - agent_id: str
+  - confidence: float = Field(ge=0.0, le=1.0)
+  - reasoning: str  <span class="comment"># mandatory chain-of-thought explanation</span>
+  - evidence: List[Citation]  <span class="comment"># grounding evidence, never empty on claims</span>
+
+<span class="section">━━━ RETRY & RESILIENCE LOGIC ━━━</span>
+<span class="kw">REQUIRED</span> in every agent:
+  - Max 3 retries with exponential backoff (1s, 2s, 4s + jitter)
+  - Retry on: RateLimitError, APITimeoutError, ValidationError
+  - On final failure: return graceful degradation response (never crash)
+  - All retries logged to state["error_log"] with timestamp + reason
+
+<span class="section">━━━ SAFETY GUARDRAILS ━━━</span>
+<span class="kw">REQUIRED</span> for every domain:
+  - Input sanitization (max tokens, injection detection)
+  - Output content filtering before display
+  - Confidence threshold: never show answer if confidence < 0.4
+  - Domain-appropriate disclaimers appended to output
+  - Audit logging: every query + response + metadata persisted
+  - PII detection and masking where applicable
+
+<span class="section">━━━ REQUIREMENTS.TXT RULES ━━━</span>
+ALL dependencies MUST be pinned to exact versions:
+  langchain==0.3.7
+  langgraph==0.2.35
+  langchain-openai==0.2.5
+  langchain-community==0.3.5
+  faiss-cpu==1.8.0
+  streamlit==1.40.0
+  pydantic==2.9.2
+  pydantic-settings==2.6.1
+  opentelemetry-sdk==1.28.0
+  redis==5.2.0
+  pytest==8.3.3
+  (include ALL transitive dependencies if they require specific versions)
+
+<span class="section">━━━ DEMO QUALITY STANDARDS ━━━</span>
+<span class="kw">HACKATHON WOW FACTOR</span>: The app.py demo MUST include:
+  1. Live streaming answer generation (visible token-by-token)
+  2. Real-time agent graph execution trace in sidebar
+  3. Side-by-side: question → retrieved docs → reasoning → answer
+  4. Confidence score displayed prominently with color coding
+  5. One-click "Show Evidence" to expand full citation viewer
+  6. Validation report visible on every response
+  7. Domain-specific sample queries prepopulated as buttons
+
+<span class="kw">ENTERPRISE FEEL</span>:
+  - Dark/light theme toggle
+  - Branded header with domain name + logo placeholder
+  - Professional typography and spacing
+  - Status indicators (🟢 connected / 🔴 error) for all services
+  - Export conversation to PDF/JSON button
+
+<span class="section">━━━ FINAL GENERATION RULES ━━━</span>
+<span class="warn">GENERATE ALL FILES IN ONE RESPONSE.</span>
+Start with: requirements.txt → .env.example → config/settings.py
+Then: schemas/ → graph/state.py → graph/nodes.py → graph/edges.py
+Then: rag/ → llm/ → agents/ → observability/ → ui/ → app.py → README.md
+
+<span class="warn">DO NOT</span> summarize what you will build. BUILD IT.
+<span class="warn">DO NOT</span> say "here's how it would look." SHOW the actual code.
+<span class="warn">DO NOT</span> leave any file partially implemented.
+<span class="warn">DO NOT</span> use comments as code substitutes.
+
+Every python file MUST start with:
+  #!/usr/bin/env python3
+  """Module docstring explaining purpose, inputs, outputs."""
+
+Every function MUST have a type-annotated signature and a one-line docstring.
+
+<span class="rule">FINAL CHECK before output</span>: Would a senior ML engineer, given only your
+output, be able to run `streamlit run app.py` in under 5 minutes with
+only pip install -r requirements.txt and filling .env? If NO — fix it.
+
+<span class="section">═══════════════════════════════════════════════════════════════
+  END OF SYSTEM PROMPT — GOOD LUCK, BUILD SOMETHING LEGENDARY
+═══════════════════════════════════════════════════════════════</span>
+</div>
+    </div>
+  </div>
+
+  <!-- ARCH TAB -->
+  <div id="tab-arch" class="tab-content">
+    <div class="arch-panel">
+      <div class="section-label">Multi-Agent System Architecture</div>
+      <div class="arch-grid">
+        <div class="arch-card">
+          <div class="arch-card-head">
+            <div class="arch-icon arch-icon-blue"><i class="ti ti-sitemap" style="color:#63d2ff;font-size:14px" aria-hidden="true"></i></div>
+            <div class="arch-card-title">Orchestrator</div>
+          </div>
+          <ul class="arch-card-body">
+            <li>LangGraph StateGraph</li>
+            <li>Conditional routing</li>
+            <li>Retry cycle logic</li>
+            <li>Checkpoint memory</li>
+          </ul>
+        </div>
+        <div class="arch-card">
+          <div class="arch-card-head">
+            <div class="arch-icon arch-icon-purple"><i class="ti ti-search" style="color:#b388ff;font-size:14px" aria-hidden="true"></i></div>
+            <div class="arch-card-title">Retrieval Agent</div>
+          </div>
+          <ul class="arch-card-body">
+            <li>FAISS vector search</li>
+            <li>BM25 hybrid</li>
+            <li>MMR reranking</li>
+            <li>Confidence scoring</li>
+          </ul>
+        </div>
+        <div class="arch-card">
+          <div class="arch-card-head">
+            <div class="arch-icon arch-icon-green"><i class="ti ti-brain" style="color:#00e5a0;font-size:14px" aria-hidden="true"></i></div>
+            <div class="arch-card-title">Reasoning Agent</div>
+          </div>
+          <ul class="arch-card-body">
+            <li>Chain-of-thought</li>
+            <li>Evidence grounding</li>
+            <li>Structured outputs</li>
+            <li>Streaming tokens</li>
+          </ul>
+        </div>
+        <div class="arch-card">
+          <div class="arch-card-head">
+            <div class="arch-icon arch-icon-red"><i class="ti ti-shield-check" style="color:#ef4444;font-size:14px" aria-hidden="true"></i></div>
+            <div class="arch-card-title">Validation Agent</div>
+          </div>
+          <ul class="arch-card-body">
+            <li>Hallucination detection</li>
+            <li>Citation coverage</li>
+            <li>Claim verification</li>
+            <li>Risk scoring</li>
+          </ul>
+        </div>
+        <div class="arch-card">
+          <div class="arch-card-head">
+            <div class="arch-icon arch-icon-amber"><i class="ti ti-building" style="color:#fbbf24;font-size:14px" aria-hidden="true"></i></div>
+            <div class="arch-card-title">Domain Agent</div>
+          </div>
+          <ul class="arch-card-body">
+            <li>Industry-specific logic</li>
+            <li>Compliance checks</li>
+            <li>Domain enrichment</li>
+            <li>Regulatory context</li>
+          </ul>
+        </div>
+        <div class="arch-card">
+          <div class="arch-card-head">
+            <div class="arch-icon arch-icon-pink"><i class="ti ti-file-check" style="color:#f472b6;font-size:14px" aria-hidden="true"></i></div>
+            <div class="arch-card-title">Synthesis Agent</div>
+          </div>
+          <ul class="arch-card-body">
+            <li>Pydantic output</li>
+            <li>Citation assembly</li>
+            <li>Disclaimer injection</li>
+            <li>Export formatting</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="section-label" style="margin-top:28px;">LangGraph Execution Flow</div>
+      <div style="background:var(--c-surface);border:1px solid var(--c-border);border-radius:10px;padding:20px 24px;">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:11.5px;line-height:2;color:#8899bb;">
+          <span style="color:#63d2ff;">START</span> → retrieve_node → <span style="color:#fbbf24;">[route_after_retrieval]</span> → reason_node → domain_node<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;↓ (low confidence)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;↓<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;re_retrieve_node&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;validate_node<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;↓ <span style="color:#fbbf24;">[route_after_validation]</span><br>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;synthesis_node → <span style="color:#00e5a0;">END</span><br>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;↓ (hallucination risk > 0.7)<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;retry_reason_node → validate_node (max 3x)
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DOMAINS TAB -->
+  <div id="tab-domains" class="tab-content">
+    <div class="domains-panel">
+      <div class="section-label">Domain Adapters — Click to Preview Injection Snippet</div>
+      <div class="domain-grid">
+        <div class="domain-card active" onclick="showDomain('healthcare')">
+          <div class="domain-emoji">🏥</div>
+          <div class="domain-name">Healthcare</div>
+          <div class="domain-desc">Clinical NLP, HIPAA, diagnosis support</div>
+        </div>
+        <div class="domain-card" onclick="showDomain('finance')">
+          <div class="domain-emoji">📈</div>
+          <div class="domain-name">Finance</div>
+          <div class="domain-desc">Risk, compliance, fraud detection</div>
+        </div>
+        <div class="domain-card" onclick="showDomain('legal')">
+          <div class="domain-emoji">⚖️</div>
+          <div class="domain-name">Legal</div>
+          <div class="domain-desc">Contract analysis, case law, compliance</div>
+        </div>
+        <div class="domain-card" onclick="showDomain('cyber')">
+          <div class="domain-emoji">🔐</div>
+          <div class="domain-name">Cybersecurity</div>
+          <div class="domain-desc">Threat intel, CVE, incident response</div>
+        </div>
+        <div class="domain-card" onclick="showDomain('enterprise')">
+          <div class="domain-emoji">🏢</div>
+          <div class="domain-name">Enterprise</div>
+          <div class="domain-desc">Copilots, knowledge bases, workflows</div>
+        </div>
+        <div class="domain-card" onclick="showDomain('operations')">
+          <div class="domain-emoji">⚙️</div>
+          <div class="domain-name">Operations</div>
+          <div class="domain-desc">Supply chain, monitoring, automation</div>
+        </div>
+        <div class="domain-card" onclick="showDomain('ai_automation')">
+          <div class="domain-emoji">🤖</div>
+          <div class="domain-name">AI Automation</div>
+          <div class="domain-desc">Agent pipelines, meta-orchestration</div>
+        </div>
+      </div>
+
+      <div id="domain-healthcare" class="domain-detail active">
+        <h3>🏥 Healthcare Domain Injection</h3>
+        <div class="domain-snippet"><span class="kw">DOMAIN</span>: Healthcare Clinical Decision Support
+
+<span class="kw">DOMAIN_AGENT INSTRUCTIONS</span>:
+- Apply HIPAA safeguards: detect + mask PHI before any LLM call
+- Enforce clinical disclaimer on ALL outputs (not medical advice)
+- RAG corpus: clinical guidelines (UpToDate, NEJM), drug databases,
+  ICD-10/CPT code references, FDA drug labels
+- Confidence threshold: 0.75 minimum (higher than default)
+- Structured output MUST include: ICD_codes, drug_interactions,
+  evidence_level (A/B/C), clinical_source_citations
+- Validation agent: cross-check against contraindication database
+- Never suggest specific dosages without Level A evidence
+- Escalation trigger: any query involving pediatrics or pregnancy</div>
+      </div>
+
+      <div id="domain-finance" class="domain-detail">
+        <h3>📈 Finance Domain Injection</h3>
+        <div class="domain-snippet"><span class="kw">DOMAIN</span>: Financial Risk & Compliance Intelligence
+
+<span class="kw">DOMAIN_AGENT INSTRUCTIONS</span>:
+- Apply SEC/FINRA disclaimers: not financial advice
+- RAG corpus: SEC filings, earnings transcripts, risk disclosures,
+  regulatory rules (Basel III, MiFID II, Dodd-Frank), market data
+- Structured output MUST include: risk_score, regulatory_flags,
+  data_sources, confidence_interval, time_sensitivity
+- Validation: cross-reference claims against official filings only
+- Flag any forward-looking statements with uncertainty warning
+- PII: mask account numbers, SSNs, client identifiers
+- Audit log: ALL queries with user_id, timestamp, output_hash</div>
+      </div>
+
+      <div id="domain-legal" class="domain-detail">
+        <h3>⚖️ Legal Domain Injection</h3>
+        <div class="domain-snippet"><span class="kw">DOMAIN</span>: Legal Research & Contract Intelligence
+
+<span class="kw">DOMAIN_AGENT INSTRUCTIONS</span>:
+- Mandatory disclaimer: not legal advice, consult qualified counsel
+- RAG corpus: case law (jurisdiction-specific), statutes, contracts,
+  regulatory guidance, legal precedents
+- Structured output MUST include: jurisdiction, case_citations,
+  statutory_references, risk_level, ambiguity_flags
+- Validation: every legal claim must cite specific statute or case
+- Hallucination detection: strict — invented case citations = fail
+- Confidence < 0.8 triggers: "Insufficient precedent — recommend
+  attorney review" rather than speculative answer
+- Track: query_topic, jurisdiction, output for compliance audit</div>
+      </div>
+
+      <div id="domain-cyber" class="domain-detail">
+        <h3>🔐 Cybersecurity Domain Injection</h3>
+        <div class="domain-snippet"><span class="kw">DOMAIN</span>: Threat Intelligence & Incident Response
+
+<span class="kw">DOMAIN_AGENT INSTRUCTIONS</span>:
+- RAG corpus: CVE database, MITRE ATT&CK, threat feeds, IOCs,
+  NIST CSF, CIS benchmarks, incident playbooks
+- Structured output MUST include: cve_ids, mitre_techniques,
+  severity_score (CVSS), remediation_steps, affected_systems
+- Validation: verify CVE existence + scoring against NVD
+- Enrich every threat with: TTP mapping, kill chain phase,
+  detection logic (Sigma rules if applicable)
+- Input safety: sanitize code/payload inputs before processing
+- Escalation: Critical/High CVEs auto-trigger notification flag
+- Never provide offensive exploit code — detection/defense only</div>
+      </div>
+
+      <div id="domain-enterprise" class="domain-detail">
+        <h3>🏢 Enterprise Copilot Domain Injection</h3>
+        <div class="domain-snippet"><span class="kw">DOMAIN</span>: Enterprise Knowledge Copilot
+
+<span class="kw">DOMAIN_AGENT INSTRUCTIONS</span>:
+- RAG corpus: internal docs, Confluence, SharePoint, Jira, Slack
+  (via connectors), SOPs, HR policies, product documentation
+- Personalization: retrieve user_role from session, filter docs
+  by access_tier (public / internal / confidential)
+- Structured output: answer + doc_links + owner_team + freshness
+- Validation: flag stale docs (> 90 days) with recency warning
+- Multi-turn: maintain thread context via checkpoint memory
+- Integration: output formatted for Teams/Slack webhook delivery
+- Analytics: track top queries, knowledge gaps, unanswered Qs</div>
+      </div>
+
+      <div id="domain-operations" class="domain-detail">
+        <h3>⚙️ Operations Domain Injection</h3>
+        <div class="domain-snippet"><span class="kw">DOMAIN</span>: Operational Intelligence & Automation
+
+<span class="kw">DOMAIN_AGENT INSTRUCTIONS</span>:
+- RAG corpus: runbooks, SLA definitions, incident history, metrics,
+  dashboards, alert configs, dependency maps
+- Structured output: root_cause, impacted_services, runbook_link,
+  remediation_steps, estimated_resolution_time
+- Real-time: integrate Prometheus/Datadog metrics if env configured
+- Validation: cross-reference against known incident patterns
+- Automation: generate executable remediation scripts (Python/Bash)
+  only when confidence > 0.85 and scope is non-destructive
+- Alerting: severity classification → page/notify/log routing
+- SLA tracking: flag responses where MTTR risk is high</div>
+      </div>
+
+      <div id="domain-ai_automation" class="domain-detail">
+        <h3>🤖 AI Automation Domain Injection</h3>
+        <div class="domain-snippet"><span class="kw">DOMAIN</span>: AI Pipeline Orchestration & Meta-Agent System
+
+<span class="kw">DOMAIN_AGENT INSTRUCTIONS</span>:
+- System is a meta-orchestrator: builds and manages sub-agent graphs
+- RAG corpus: agent capability registry, tool schemas, prompt library,
+  evaluation benchmarks, failure mode database
+- Structured output: agent_plan (DAG), tool_calls, success_criteria,
+  fallback_strategy, cost_estimate (tokens + latency)
+- Validation: dry-run tool call schemas before execution
+- Safety: human-in-the-loop checkpoints for destructive actions
+- Observability: trace every sub-agent call in parent span
+- Self-improvement: log failures → auto-update retrieval corpus
+- Rate limiting: enforce per-tool call budgets to prevent runaway</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RULES TAB -->
+  <div id="tab-rules" class="tab-content">
+    <div class="rules-panel">
+      <div class="section-label">Enforcement Rules — Built Into Every Generated File</div>
+      <div class="rule-list">
+        <div class="rule-item">
+          <div class="rule-num">01</div>
+          <div class="rule-text"><strong>Zero placeholder tolerance</strong> — No TODOs, no "...", no pseudo-code, no stub functions. Every function body is <em>fully implemented</em> or the output is rejected.</div>
+          <div class="rule-tag tag-crit">CRITICAL</div>
+        </div>
+        <div class="rule-item">
+          <div class="rule-num">02</div>
+          <div class="rule-text"><strong>Pinned dependencies</strong> — All packages in requirements.txt use exact version pins (==). No ranges, no wildcards. Reproducible builds are non-negotiable.</div>
+          <div class="rule-tag tag-arch">ARCH</div>
+        </div>
+        <div class="rule-item">
+          <div class="rule-num">03</div>
+          <div class="rule-text"><strong>Pydantic-first outputs</strong> — Every LLM response is parsed into a Pydantic v2 model with confidence, timestamp, agent_id, reasoning, and evidence fields. <em>No raw strings.</em></div>
+          <div class="rule-tag tag-safe">SAFETY</div>
+        </div>
+        <div class="rule-item">
+          <div class="rule-num">04</div>
+          <div class="rule-text"><strong>Conditional graph routing</strong> — LangGraph edges use typed routing functions. Confidence thresholds, retry counts, and hallucination scores all drive routing decisions explicitly.</div>
+          <div class="rule-tag tag-arch">ARCH</div>
+        </div>
+        <div class="rule-item">
+          <div class="rule-num">05</div>
+          <div class="rule-text"><strong>Evidence-grounded answers</strong> — Validation agent scores citation coverage per answer. Responses with hallucination_risk > 0.7 are <em>blocked and retried</em>, never shown to user.</div>
+          <div class="rule-tag tag-safe">SAFETY</div>
+        </div>
+        <div class="rule-item">
+          <div class="rule-num">06</div>
+          <div class="rule-text"><strong>Streaming is mandatory</strong> — app.py uses st.write_stream() with AsyncGenerator. Users see live token generation. No batch-then-display anti-patterns.</div>
+          <div class="rule-tag tag-ux">UX</div>
+        </div>
+        <div class="rule-item">
+          <div class="rule-num">07</div>
+          <div class="rule-text"><strong>Retry with backoff</strong> — All LLM calls and agent nodes implement max-3 retry with exponential backoff + jitter. Failures log to state["error_log"] with ISO timestamp.</div>
+          <div class="rule-tag tag-arch">ARCH</div>
+        </div>
+        <div class="rule-item">
+          <div class="rule-num">08</div>
+          <div class="rule-text"><strong>Context viewer required</strong> — ui/context_viewer.py must display: retrieved chunks with scores, full CoT reasoning trace, validation report, and per-claim citation mapping.</div>
+          <div class="rule-tag tag-ux">UX</div>
+        </div>
+        <div class="rule-item">
+          <div class="rule-num">09</div>
+          <div class="rule-text"><strong>Observability dashboard</strong> — Every query records latency, tokens, confidence, and retry count. ui/dashboard.py renders these live using st.metric and st.line_chart.</div>
+          <div class="rule-tag tag-arch">ARCH</div>
+        </div>
+        <div class="rule-item">
+          <div class="rule-num">10</div>
+          <div class="rule-text"><strong>Domain-aware safety rails</strong> — Domain agent injects compliance rules: HIPAA masking, legal disclaimers, financial risk flags, CVE-only-from-NVD — appropriate to the vertical.</div>
+          <div class="rule-tag tag-safe">SAFETY</div>
+        </div>
+        <div class="rule-item">
+          <div class="rule-num">11</div>
+          <div class="rule-text"><strong>5-minute setup guarantee</strong> — A senior engineer must be able to run <em>streamlit run app.py</em> in under 5 minutes after pip install -r requirements.txt + .env fill.</div>
+          <div class="rule-tag tag-crit">CRITICAL</div>
+        </div>
+        <div class="rule-item">
+          <div class="rule-num">12</div>
+          <div class="rule-text"><strong>Full folder output</strong> — Every file listed in the folder structure is generated in full. No "see above" references. No skipped files. No partial implementations.</div>
+          <div class="rule-tag tag-crit">CRITICAL</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="footer">
+  <span class="footer-note">// paste problem domain into {PASTE_YOUR_HACKATHON_PROBLEM_HERE} · adapt domain agent accordingly</span>
+  <span class="run-cmd">$ streamlit run app.py</span>
+</div>
+
+<script>
+const domainSnippets = {
+  healthcare: document.getElementById('domain-healthcare'),
+  finance: document.getElementById('domain-finance'),
+  legal: document.getElementById('domain-legal'),
+  cyber: document.getElementById('domain-cyber'),
+  enterprise: document.getElementById('domain-enterprise'),
+  operations: document.getElementById('domain-operations'),
+  ai_automation: document.getElementById('domain-ai_automation'),
+};
+
+function switchTab(name) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  event.target.classList.add('active');
+  document.getElementById('tab-' + name).classList.add('active');
+}
+
+function showDomain(name) {
+  document.querySelectorAll('.domain-card').forEach(c => c.classList.remove('active'));
+  event.currentTarget.classList.add('active');
+  Object.values(domainSnippets).forEach(d => d.classList.remove('active'));
+  if (domainSnippets[name]) domainSnippets[name].classList.add('active');
+}
+
+function copyPrompt() {
+  const el = document.getElementById('promptText');
+  const text = el.innerText;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.getElementById('copyBtn');
+    btn.textContent = '✓ Copied!';
+    btn.classList.add('copied');
+    setTimeout(() => {
+      btn.textContent = '⎘ Copy Full Prompt';
+      btn.classList.remove('copied');
+    }, 2000);
+  });
+}
+</script>
+</body>
+</html>
